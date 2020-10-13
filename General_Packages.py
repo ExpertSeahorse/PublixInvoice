@@ -470,7 +470,7 @@ def read_my_email(subject, usernm='dfeldmansfakeemail@gmail.com', passwd = priva
     for num in data[0].split():
         _typ, data = conn.fetch(num,'(RFC822)')
         msg = email.message_from_bytes(data[0][1])
-        _typ2, data = conn.store(num,'-FLAGS','\\Seen')
+        _typ2, data = conn.store(num,'+FLAGS','\\Seen')
         yield msg
     
 
