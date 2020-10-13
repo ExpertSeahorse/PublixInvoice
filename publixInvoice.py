@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import json
 import sys
 import re
@@ -29,4 +31,5 @@ if ticket_arr:
     Venmo.logout()
 
 else:
-    print("No receipts today.")
+    from datetime import date
+    print("No receipts on: ", date.today())
