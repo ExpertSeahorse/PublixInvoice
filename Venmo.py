@@ -5,7 +5,7 @@ import json, os
 
 # Venmo documentation: https://pypi.org/project/venmo-api/
 
-with open(os.path.join("key", "venmo"), "r") as file:
+with open(os.path.join("key", "venmo_login"), "r") as file:
     me = json.load(file)
 
 try:

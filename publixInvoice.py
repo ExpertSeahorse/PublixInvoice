@@ -32,4 +32,4 @@ if ticket_arr:
 
 else:
     from datetime import date
-    print("No receipts on: ", date.today())
+    print("\nNo receipts on: ", date.today())
