@@ -131,8 +131,8 @@ def time_delta_display(sec):
 def display_num(num):
     """
     Formats numbers to use the format ###.## <Name> after 1,000,000 > 1.00 million
-    :param num:
-    :return:
+    :param num: double
+    :return: string
     """
     name_bank = ['million',
                  'billion',
