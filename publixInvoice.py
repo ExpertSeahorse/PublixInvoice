@@ -18,7 +18,7 @@ for s in subjects:
         total = re.findall(r'Grand Total\s+\d+\.\d+', mail)
         date = re.findall(r'\d{2}\/\d{2}\/\d{4}', mail)
         print(total, date)
-        ticket_arr.append(total, date)
+        ticket_arr.append((total, date))
 
 # Send any venmo request to Kristen
 if ticket_arr:
