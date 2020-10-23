@@ -5,9 +5,11 @@ import json, os, errno
 
 # Venmo documentation: https://pypi.org/project/venmo-api/
 
+###### Build Venmo client from credential file
+
 CREDENTIAL_FILE = os.path.join(".key", "venmo_login") 
 
-# Get login credentials and create Venmo token
+# Get login credentials
 f = True
 try:
     with open(CREDENTIAL_FILE, "r") as file:
@@ -108,5 +110,5 @@ def logout():
     venmo.log_out(access_token)
 
 if __name__ == '__main__':
-    charge_money(.01, 'Kristen-Lockhart-10', "Python Testing")
+    #charge_money(.01, 'Kristen-Lockhart-10', "Python Testing")
     logout()
