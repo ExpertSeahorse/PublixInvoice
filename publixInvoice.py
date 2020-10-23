@@ -9,7 +9,7 @@ from General_Packages import read_my_email
 
 # For each subject...
 ticket_arr = []
-subjects = ["FW: Your Publix receipt.", 'Fwd: Your Publix receipt.']
+subjects = ["FW: Your Publix receipt.", "Fwd: Your Publix receipt.", "Your Publix receipt."]
 for s in subjects:
     # Look thru my inbox for matches and...
     for mail in read_my_email(subject=s):
