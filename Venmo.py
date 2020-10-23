@@ -9,13 +9,21 @@ with open(os.path.join("key", "venmo_login"), "r") as file:
     me = json.load(file)
 
 try:
-    access_token = venmo_api.Client.get_access_token(username=me[0],
-                                                    password=me[1], 
-                                                    device_id=me[2])
+    access_token = me[3]
     venmo = venmo_api.Client(access_token=access_token)
+except IndexError: 
+    try:
+        access_token = venmo_api.Client.get_access_token(username=me[0],
+                                                        password=me[1], 
+                                                        device_id=me[2])
+        venmo = venmo_api.Client(access_token=access_token)
+        
+        me.append(access_token)
+        with open(os.path.join("key", "venmo_login"), "w") as file:
+            json.dump(me, file)
 
-except():
-    send_sms("Venmo login failed.")
+    except:
+        send_sms("Venmo login failed.")
 
 
 def send_money(amount, target, message):
@@ -64,4 +72,4 @@ def logout():
     venmo.log_out(access_token)
 
 if __name__ == '__main__':
-    pass
+    logout()

@@ -16,7 +16,7 @@ for s in subjects:
         # get the grand total and date from the receipt
         mail = str(mail)
         total = re.findall(r'Grand Total\s+\d+\.\d+', mail)
-        date = re.findall(r'\d{2}\/\d{2}\/\d{4}', mail)
+        date = re.findall(r'\d{2}\/\d{2}\/\d{4}', mail)[0]
         print(total, date)
         ticket_arr.append((total, date))
 
@@ -28,7 +28,7 @@ if ticket_arr:
         message = "Publix " + date
         Venmo.charge_money(total/2, 'Kristen-Lockhart-10', message)
             
-    Venmo.logout()
+    #Venmo.logout()
 
 else:
     from datetime import date
