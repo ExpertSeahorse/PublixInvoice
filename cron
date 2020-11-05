@@ -10,5 +10,5 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 # |  |  |  |  |
 # *  *  *  *  * user-name  command to be executed
 
-49 1 * * *  /home/david/Documents/PersonalProjects/PublixInvoice/publixInvoice.py >> /home/david/Documents/PersonalProjects/PublixInvoice/output_logs 2>&1
+49 1 * * * david /home/david/Documents/PersonalProjects/PublixInvoice/publixInvoice.py >> /home/david/Documents/PersonalProjects/PublixInvoice/output_logs 2>&1
 

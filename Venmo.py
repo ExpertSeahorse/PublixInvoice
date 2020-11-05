@@ -14,7 +14,6 @@ f = True
 try:
     with open(CREDENTIAL_FILE, "r") as file:
         me = json.load(file)
-        print("here")
     
 # If no credential file, get credentials from user
 except FileNotFoundError:
@@ -30,7 +29,6 @@ except FileNotFoundError:
 # Create Venmo token
 try:
     access_token = me[3]
-    print("Here2")
     
 # If access_token not saved
 except IndexError: 
@@ -47,14 +45,13 @@ except IndexError:
 else:
     try:
         venmo = venmo_api.Client(access_token=access_token)
-        print("here3")
 
     # If the saved access_token is bad, get a new one
     except:
         f = False
-        access_token = venmo_api.Client.get_access_token(username=me[0], password=me[1], device_id=me[2])
+        me[3] = venmo_api.Client.get_access_token(username=me[0], password=me[1], device_id=me[2])
         try:
-            venmo = venmo_api.Client(access_token=access_token)
+            venmo = venmo_api.Client(access_token=me[3])
         except:
             send_sms("Venmo login failed.")
 
@@ -111,4 +108,5 @@ def logout():
 
 if __name__ == '__main__':
     #charge_money(.01, 'Kristen-Lockhart-10', "Python Testing")
-    logout()
+    #logout()
+    print("End")
