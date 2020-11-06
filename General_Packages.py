@@ -255,7 +255,7 @@ def float_extract(s):
     return undisplay_num(''.join(l))
 
 
-def send_sms(message, number='813-352-2669', carrier='verizon'):
+def send_sms(message, number='813-352-2669', carrier='verizon', debug=False):
     """
     Sends a text message using smtp
     find any number's carrier using https://freecarrierlookup.com/
@@ -264,13 +264,12 @@ def send_sms(message, number='813-352-2669', carrier='verizon'):
     :param carrier:
     :return:
     """
-    from smtplib import SMTP
     # Cannot send non alphanumeric characters (ex. ":)")
-    carriers = {'att': '@mms.att.net',                  # Not working, needs to be mms style message
-                'tmobile': '@tmomail.net',              # Not working, blocking MX, DNS mismatch
+    carriers = {'att': '@mms.att.net',                  # Working
+                'tmobile': '@tmomail.net',              # Working
                 'verizon': '@vtext.com',                # Working
                 'sprint': '@messaging.sprintpcs.com',   # Working
-                'at&t': '@txt.att.net',                 # Working
+                'at&t': '@txt.att.net',                 # Working.........don't use if it can be avoided, att looks better
                 'boost': '@myboostmobile.com',          # Untested
                 'cricket': '@sms.mycricket.com',        # Untested
                 'metropcs': '@mymetropcs.com',          # Untested
@@ -278,38 +277,60 @@ def send_sms(message, number='813-352-2669', carrier='verizon'):
                 'uscell': '@email.uscc.net',            # Untested
                 'virgin': '@vmobl.com'                  # Untested
     }
+
     # BUILD THE MESSAGE
     # Removes all formatting from the phone number
     number = number.replace('-', '').replace('(', '').replace(')', '')
     # Adds the carrier extention to the phone number
     to_number = number + '{}'.format(carriers[carrier])
-    # Sets the id and password to the email acct
-    auth = ('dfeldmansfakeemail@gmail.com', privacy_decoder('ÜÐÚÚÜÓºâÊíâå', "password"))
+
+    # Set subject and customize settings for each carrier
+    if carrier == 'tmobile':
+        subject = '.'
+        message += "  "
+    elif carrier == 'att':
+        subject = ' '
+    else:
+        subject = ''
+
     # Refuses to send the message if the length is too long
-    if len(message) > 128:
+    if len(message+subject) > 128:
         print("Message too long (>128)")
         return "Message too long (>128)"
 
     # SEND THE MESSAGE
+
     # Establish a secure session with gmail's outgoing SMTP server using your gmail account
-    server = SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(auth[0], auth[1])
+    if not debug:
+        send_email(message, to_number, subject)
+        print("Sent SMS")
+        return "Sent SMS"
+    else:
+        return subject+' '+message
 
-    # Send text message through SMS gateway of destination number
-    server.sendmail(auth[0], to_number, message)
-    server.quit()
-    print("Sent SMS")
+
+def send_email(mes, reciever_address='dtfeldman@verizon.net', subject=''):
     """
-    
+    Send an email to the reciever_address with the message and subject
+    param mes: string, email's message
+    param reciever_address: string, email's reciepient
+    param subject: string, email's subject
     """
-    return "Sent SMS"
-
-
-def send_email(message, address='dtfeldman@verizon.net'):
     from smtplib import SMTP
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    SENDER_EMAIL = 'dfeldmansfakeemail@gmail.com'
+
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = SENDER_EMAIL
+    message["To"] = reciever_address
+
+    message.attach(MIMEText(mes, 'plain'))
+
     # login to the gmail acct
-    auth = ('dfeldmansfakeemail@gmail.com', privacy_decoder('ÜÐÚÚÜÓºâÊíâå', "password"))
+    auth = (SENDER_EMAIL, privacy_decoder('ÜÐÚÚÜÓºâÊíâå', "password"))
 
     # Establish a secure session with gmail's outgoing SMTP server using your gmail account
     server = SMTP("smtp.gmail.com", 587)
@@ -317,8 +338,7 @@ def send_email(message, address='dtfeldman@verizon.net'):
     server.login(auth[0], auth[1])
 
     # Send text message through SMS gateway of destination number
-    # server.sendmail(auth[0], to_number, message)
-    server.sendmail(auth[0], address, message)
+    server.sendmail(auth[0], reciever_address, message.as_string())
     server.quit()
 
 
@@ -341,7 +361,7 @@ def privacy_encoder(message, key=""):
         key_c = key[i % len(key)]
         encoded_c = chr(ord(message[i]) + ord(key_c) % 256)
         encoded_chars.append(encoded_c)
-    return "".join(encoded_chars) + "," + key
+    return "".join(encoded_chars) + ", " + key
 
 
 def privacy_decoder(encoded_message, key):
@@ -472,8 +492,9 @@ def read_my_email(subject, usernm='dfeldmansfakeemail@gmail.com', passwd = priva
         msg = email.message_from_bytes(data[0][1])
         _typ2, data = conn.store(num,'+FLAGS','\\Seen')
         yield msg
-    
+
 
 if __name__ == '__main__':
     pass
     # read_my_email()
+    send_sms("I will push to github soon", "813-409-6697", carrier='tmobile')
