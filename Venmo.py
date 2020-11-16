@@ -1,30 +1,36 @@
 from datetime import datetime, timedelta
 from General_Packages import privacy_decoder, send_sms
 import venmo_api
-import json, os, errno
+import json, os, errno, re
 
 # Venmo documentation: https://pypi.org/project/venmo-api/
+
 
 ###### Build Venmo client from credential file
 
 CREDENTIAL_FILE = os.path.join(".key", "venmo_login") 
 
 # Get login credentials
-f = True
 try:
     with open(CREDENTIAL_FILE, "r") as file:
         me = json.load(file)
     
 # If no credential file, get credentials from user
 except FileNotFoundError:
-    f = False
     try:
         os.mkdir(os.path.join(os.getcwd(), ".key"))
     except OSError as exc:
         if exc.errno != errno.EEXIST:
-            raise
+            raise exec
         pass
     me = [input("Venmo username: "), input("Venmo password: ")]
+    # See if the device_id can be stolen from the logs
+    try:
+        with open('output_logs', 'r') as file:
+            log = file.read()
+            me[2] = re.findall(r"device-id: \w+-\w+-\w+-\w+-\w+", log)[-1]
+    except:
+        me[2] = "<No Device ID in logs>"
 
 # Create Venmo token
 try:
@@ -32,7 +38,6 @@ try:
     
 # If access_token not saved
 except IndexError: 
-    f = False
     try:
         access_token = venmo_api.Client.get_access_token(username=me[0], password=me[1])
         me.append("<REPLACE THIS WITH A VALID DEVICE ID>")            
@@ -48,7 +53,6 @@ else:
 
     # If the saved access_token is bad, get a new one
     except:
-        f = False
         me[3] = venmo_api.Client.get_access_token(username=me[0], password=me[1], device_id=me[2])
         try:
             venmo = venmo_api.Client(access_token=me[3])
@@ -56,10 +60,20 @@ else:
             send_sms("Venmo login failed.")
 
 # Make/update credential file
-if not f:
-    with open(CREDENTIAL_FILE, "w") as file:
-        json.dump(me, file)
-    
+with open(CREDENTIAL_FILE, "w") as file:
+    #print(me)
+    json.dump(me, file)
+
+def get_user(user):
+    if user[0] == '@':
+        user = user[1:]
+
+    target = venmo.user.search_for_users(user)[0].id  # search for users (there should only be one) -> the first one -> get id
+
+    if target != user or type(target) != str :
+        raise Exception("Incorrect user")
+    else:
+        return target
 
 def send_money(amount, target, message):
     """
@@ -69,10 +83,7 @@ def send_money(amount, target, message):
     :param message: string: The message for the transaction
     :return:
     """
-    if target[0] == '@':
-        target = target[1:]
-
-    target = venmo.user.search_for_users(target)[0].id  # search for users (there should only be one) -> the first one -> get id
+    target = get_user(target)
     
     final_amount = float(round(amount, 2))
     venmo.payment.send_money(
@@ -90,10 +101,7 @@ def charge_money(amount, target, message):
     :param message: string: The message for the transaction
     :return:
     """
-    if target[0] == '@':
-        target = target[1:]
-
-    target = venmo.user.search_for_users(target)[0].id  # search for users (there should only be one) -> the first one -> get id
+    target = get_user(target)
     
     final_amount = float(round(amount, 2))
     venmo.payment.request_money(
