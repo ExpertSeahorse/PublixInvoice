@@ -7,73 +7,71 @@ import json, os, errno, re
 
 
 ###### Build Venmo client from credential file
+def make_venmo():
+    CREDENTIAL_FILE = os.path.join(".key", "venmo_login") 
 
-CREDENTIAL_FILE = os.path.join(".key", "venmo_login") 
-
-# Get login credentials
-try:
-    with open(CREDENTIAL_FILE, "r") as file:
-        me = json.load(file)
-    
-# If no credential file, get credentials from user
-except FileNotFoundError:
+    # Get login credentials
     try:
-        os.mkdir(os.path.join(os.getcwd(), ".key"))
-    except OSError as exc:
-        if exc.errno != errno.EEXIST:
-            raise exec
-        pass
-    me = [input("Venmo username: "), input("Venmo password: ")]
-    # See if the device_id can be stolen from the logs
-    try:
-        with open('output_logs', 'r') as file:
-            log = file.read()
-            me[2] = re.findall(r"device-id: \w+-\w+-\w+-\w+-\w+", log)[-1]
-    except:
-        me[2] = "<No Device ID in logs>"
-
-# Create Venmo token
-try:
-    access_token = me[3]
-    
-# If access_token not saved
-except IndexError: 
-    try:
-        access_token = venmo_api.Client.get_access_token(username=me[0], password=me[1])
-        me.append("<REPLACE THIS WITH A VALID DEVICE ID>")            
-        me.append(access_token)
-        venmo = venmo_api.Client(access_token=access_token)
-
-    except:
-        send_sms("Venmo login failed.")
-# If access_token is saved
-else:
-    try:
-        venmo = venmo_api.Client(access_token=access_token)
-
-    # If the saved access_token is bad, get a new one
-    except:
-        me[3] = venmo_api.Client.get_access_token(username=me[0], password=me[1], device_id=me[2])
+        with open(CREDENTIAL_FILE, "r") as file:
+            me = json.load(file)
+        
+    # If no credential file, get credentials from user
+    except FileNotFoundError:
         try:
-            venmo = venmo_api.Client(access_token=me[3])
+            os.mkdir(os.path.join(os.getcwd(), ".key"))
+        except OSError as exc:
+            if exc.errno != errno.EEXIST:
+                raise exec
+            pass
+        me = [input("Venmo username: "), input("Venmo password: ")]
+        # See if the device_id can be stolen from the logs
+        try:
+            with open('output_logs', 'r') as file:
+                log = file.read()
+                me[2] = re.findall(r"device-id: \w+-\w+-\w+-\w+-\w+", log)[-1]
+        except:
+            me[2] = "<No Device ID in logs>"
+
+    # Create Venmo token
+    try:
+        access_token = me[3]
+        
+    # If access_token not saved
+    except IndexError: 
+        try:
+            access_token = venmo_api.Client.get_access_token(username=me[0], password=me[1])
+            me.append("<REPLACE THIS WITH A VALID DEVICE ID>")            
+            me.append(access_token)
+            return venmo_api.Client(access_token=access_token)
+
         except:
             send_sms("Venmo login failed.")
+    # If access_token is saved
+    else:
+        try:
+            return venmo_api.Client(access_token=access_token)
 
-# Make/update credential file
-with open(CREDENTIAL_FILE, "w") as file:
-    #print(me)
-    json.dump(me, file)
+        # If the saved access_token is bad, get a new one
+        except:
+            me[3] = venmo_api.Client.get_access_token(username=me[0], password=me[1], device_id=me[2])
+            try:
+                return venmo_api.Client(access_token=me[3])
+            except:
+                send_sms("Venmo login failed.")
 
+    # Make/update credential file
+    with open(CREDENTIAL_FILE, "w") as file:
+        #print(me)
+        json.dump(me, file)
+
+venmo = make_venmo()
 def get_user(user):
     if user[0] == '@':
         user = user[1:]
 
     target = venmo.user.search_for_users(user)[0].id  # search for users (there should only be one) -> the first one -> get id
 
-    if target != user or type(target) != str :
-        raise Exception("Incorrect user")
-    else:
-        return target
+    return target
 
 def send_money(amount, target, message):
     """
@@ -115,6 +113,6 @@ def logout():
     venmo.log_out(access_token)
 
 if __name__ == '__main__':
-    #charge_money(.01, 'Kristen-Lockhart-10', "Python Testing")
+    charge_money(.01, 'Kristen-Lockhart-10', "Python Testing")
     #logout()
     pass

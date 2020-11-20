@@ -496,5 +496,3 @@ def read_my_email(subject, usernm='dfeldmansfakeemail@gmail.com', passwd = priva
 
 if __name__ == '__main__':
     pass
-    # read_my_email()
-    send_sms("I will push to github soon", "813-409-6697", carrier='tmobile')
