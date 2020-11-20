@@ -102,6 +102,8 @@ def charge_money(amount, target, message):
     target = get_user(target)
     
     final_amount = float(round(amount, 2))
+
+    print(final_amount, target, message)
     venmo.payment.request_money(
         final_amount,
         message,
