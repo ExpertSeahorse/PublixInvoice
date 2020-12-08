@@ -1,5 +1,7 @@
 .key/
-gggg.txt
+
 __pycache__/
+
 output_logs
-key/venmo
+
+.vscode
