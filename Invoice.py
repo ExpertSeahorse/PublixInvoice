@@ -62,12 +62,12 @@ if ticket_arr:
     for total, date, name in ticket_arr:
         message = name + ' ' + date
 
-        if name != "Publix":
-            try:
-                total = float(re.search(r"\d+\.\d+", total).group()) # Get the number out of the string    
-            except AttributeError:
-                total = float(total[1:])
-        else:
+        try:
+            total = float(re.search(r"\d+\.\d+", total).group()) # Get the number out of the string    
+        except AttributeError:
+            total = float(total[1:])
+
+        if name == "Publix" and total > 100.00:
             total = 100.00  # only paying for $50 of groceries
         
         Venmo.charge_money(total/2, 'Kristen-Lockhart-10', message)
