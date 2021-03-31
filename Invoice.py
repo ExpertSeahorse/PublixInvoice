@@ -13,7 +13,7 @@ class Utility:
         self.total = total
 
 # I don't want to put my TECO acct_num in the code
-here = os.path.join("Documents", "PersonalProjects", "PublixInvoice")
+here = os.path.join(os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice")
 teco_acct_num = ""
 with open(os.path.join(here, ".key", "teco_acct_num.txt"), 'r') as fin:
     teco_acct_num = fin.read()
@@ -50,7 +50,10 @@ for utility in utilities:
             if type(total) == type([]): 
                 total = total[0]
             if type(date) == type([]): 
-                date = date[0]
+                if utility.name == 'Publix':
+                    date = date[1]
+                else:
+                    date = date[0]
 
             print(utility.name, total, date)
             ticket_arr.append((total, date, utility.name))
