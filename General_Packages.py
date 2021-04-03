@@ -255,7 +255,7 @@ def float_extract(s):
     return undisplay_num(''.join(l))
 
 
-def send_sms(message, number='813-352-2669', carrier='verizon', debug=False):
+def send_sms(message, number='placeholder', carrier='placeholder', debug=False):
     """
     Sends a text message using smtp
     find any number's carrier using https://freecarrierlookup.com/
@@ -307,7 +307,6 @@ def send_sms(message, number='813-352-2669', carrier='verizon', debug=False):
         return "Sent SMS"
     else:
         return subject+' '+message
-
 
 def send_email(mes, reciever_address='dtfeldman@verizon.net', subject=''):
     """
