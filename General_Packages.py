@@ -493,5 +493,34 @@ def read_my_email(subject, usernm='dfeldmansfakeemail@gmail.com', passwd = priva
         yield msg
 
 
+def ping(host, silent=False):
+    """
+    Returns True if host (str) responds to a ping request.
+    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+    """
+    import platform    # For getting the operating system name
+    import subprocess  # For executing a shell command
+
+    # Option for the number of packets as a function of
+    param = '-n' if platform.system().lower()=='windows' else '-c'
+
+    # Building the command. Ex: "ping -c 1 google.com"
+    command = ['ping', param, '1', host]
+    if silent:
+        return subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
+    else:
+        return subprocess.run(command) == 0
+
+
+def test_network(website='google.com'):
+    good = False
+    while not good:
+        try:
+            ping(website, True)
+        except:
+            good = False
+        else:
+            good = True
+
 if __name__ == '__main__':
     pass

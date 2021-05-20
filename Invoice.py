@@ -3,7 +3,9 @@
 import sys, os
 import re
 
-from General_Packages import read_my_email
+from General_Packages import read_my_email, test_network
+
+test_network()
 
 class Utility:
     def __init__(self, name, subject, total=r"\$\d+\.\d+"):
@@ -12,7 +14,7 @@ class Utility:
         self.total = total
 
 here = os.path.join(os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice")
-print(os.getcwd())
+#print(os.getcwd())
 try:
     # I don't want to put my TECO acct_num in the code
     teco_acct_num = ""
