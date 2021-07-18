@@ -5,17 +5,19 @@ import json, os, errno, re
 
 # Venmo documentation: https://pypi.org/project/venmo-api/
 
-here = os.path.join(os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice")
+here = os.path.join(
+    os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice"
+)
 
 ###### Build Venmo client from credential file
 def make_venmo():
-    CREDENTIAL_FILE = os.path.join(here, ".key", "venmo_login") 
+    CREDENTIAL_FILE = os.path.join(here, ".key", "venmo_login")
 
     # Get login credentials
     try:
         with open(CREDENTIAL_FILE, "r") as file:
             me = json.load(file)
-        
+
     # If no credential file, get credentials from user
     except FileNotFoundError:
         try:
@@ -27,7 +29,7 @@ def make_venmo():
         me = [input("Venmo username: "), input("Venmo password: ")]
         # See if the device_id can be stolen from the logs
         try:
-            with open('output_logs', 'r') as file:
+            with open("output_logs", "r") as file:
                 log = file.read()
                 me[2] = re.findall(r"device-id: \w+-\w+-\w+-\w+-\w+", log)[-1]
         except:
@@ -36,12 +38,14 @@ def make_venmo():
     # Create Venmo token
     try:
         access_token = me[3]
-        
+
     # If access_token not saved
-    except IndexError: 
+    except IndexError:
         try:
-            access_token = venmo_api.Client.get_access_token(username=me[0], password=me[1])
-            me.append("<REPLACE THIS WITH A VALID DEVICE ID>")            
+            access_token = venmo_api.Client.get_access_token(
+                username=me[0], password=me[1]
+            )
+            me.append("<REPLACE THIS WITH A VALID DEVICE ID>")
             me.append(access_token)
             return venmo_api.Client(access_token=access_token)
 
@@ -54,7 +58,9 @@ def make_venmo():
 
         # If the saved access_token is bad, get a new one
         except:
-            me[3] = venmo_api.Client.get_access_token(username=me[0], password=me[1], device_id=me[2])
+            me[3] = venmo_api.Client.get_access_token(
+                username=me[0], password=me[1], device_id=me[2]
+            )
             try:
                 return venmo_api.Client(access_token=me[3])
             except:
@@ -62,17 +68,23 @@ def make_venmo():
 
     # Make/update credential file
     with open(CREDENTIAL_FILE, "w") as file:
-        #print(me)
+        # print(me)
         json.dump(me, file)
 
+
 venmo = make_venmo()
+
+
 def get_user(user):
-    if user[0] == '@':
+    if user[0] == "@":
         user = user[1:]
 
-    target = venmo.user.search_for_users(user)[0].id  # search for users (there should only be one) -> the first one -> get id
+    target = venmo.user.search_for_users(user)[
+        0
+    ].id  # search for users (there should only be one) -> the first one -> get id
 
     return target
+
 
 def send_money(amount, target, message):
     """
@@ -83,13 +95,9 @@ def send_money(amount, target, message):
     :return:
     """
     target = get_user(target)
-    
+
     final_amount = float(round(amount, 2))
-    venmo.payment.send_money(
-        final_amount,
-        message,
-        target
-    )
+    venmo.payment.send_money(final_amount, message, target)
 
 
 def charge_money(amount, target, message):
@@ -101,21 +109,18 @@ def charge_money(amount, target, message):
     :return:
     """
     target = get_user(target)
-    
+
     final_amount = float(round(amount, 2))
 
-    #print(final_amount, target, message)
-    venmo.payment.request_money(
-        final_amount,
-        message,
-        target
-    )
+    # print(final_amount, target, message)
+    venmo.payment.request_money(final_amount, message, target)
 
 
 def logout():
     venmo.log_out(access_token)
 
-if __name__ == '__main__':
-    charge_money(.01, 'Kristen-Lockhart-10', "Python Testing")
-    #logout()
+
+if __name__ == "__main__":
+    charge_money(0.01, "Kristen-Lockhart-10", "Python Testing")
+    # logout()
     pass
