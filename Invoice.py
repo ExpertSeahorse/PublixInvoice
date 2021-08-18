@@ -15,9 +15,7 @@ class Utility:
         self.total = total
 
 
-here = os.path.join(
-    os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice"
-)
+here = os.path.join(os.sep, "home", "david", "Documents", "projects", "PublixInvoice")
 # print(os.getcwd())
 try:
     # I don't want to put my TECO acct_num in the code
@@ -88,7 +86,10 @@ try:
         from datetime import date
 
         print("\nNo receipts on: ", date.today())
-except:
+except Exception as e:
+    raise e
+    print(e)
+    print(e.msg)
     from General_Packages import send_sms
     import json
 
