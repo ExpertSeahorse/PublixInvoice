@@ -14,10 +14,15 @@ class Utility:
         self.subject = subject
         self.total = total
 
+if os.name == 'nt':
+    here = os.path.join(
+        "C:\\", "Users", "dtfel", "projects", "PublixInvoice"
+    )
 
-here = os.path.join(
-    os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice"
-)
+else:
+    here = os.path.join(
+        os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice"
+    )
 # print(os.getcwd())
 try:
     # I don't want to put my TECO acct_num in the code
@@ -88,9 +93,11 @@ try:
         from datetime import date
 
         print("\nNo receipts on: ", date.today())
-except:
+except Exception as e:
     from General_Packages import send_sms
     import json
+
+    raise e
 
     # Get phone credentials and send sms that the script failed
     with open(os.path.join(here, ".key", "phone"), "r") as fin:
