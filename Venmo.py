@@ -6,7 +6,7 @@ import json, os, errno, re
 # Venmo documentation: https://pypi.org/project/venmo-api/
 
 here = os.path.join(
-    os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice"
+    os.sep, "home", "david", "Documents", "projects", "PublixInvoice"
 )
 
 ###### Build Venmo client from credential file
@@ -31,9 +31,9 @@ def make_venmo():
         try:
             with open("output_logs", "r") as file:
                 log = file.read()
-                me[2] = re.findall(r"device-id: \w+-\w+-\w+-\w+-\w+", log)[-1]
+                me.append(re.findall(r"device-id: \w+-\w+-\w+-\w+-\w+", log)[-1])
         except:
-            me[2] = "<No Device ID in logs>"
+            me.append("<No Device ID in logs>")
 
     # Create Venmo token
     try:
@@ -47,14 +47,14 @@ def make_venmo():
             )
             me.append("<REPLACE THIS WITH A VALID DEVICE ID>")
             me.append(access_token)
-            return venmo_api.Client(access_token=access_token)
+            client = venmo_api.Client(access_token=access_token)
 
         except:
             send_sms("Venmo login failed.")
     # If access_token is saved
     else:
         try:
-            return venmo_api.Client(access_token=access_token)
+            client = venmo_api.Client(access_token=access_token)
 
         # If the saved access_token is bad, get a new one
         except:
@@ -62,15 +62,15 @@ def make_venmo():
                 username=me[0], password=me[1], device_id=me[2]
             )
             try:
-                return venmo_api.Client(access_token=me[3])
+                client = venmo_api.Client(access_token=me[3])
             except:
                 send_sms("Venmo login failed.")
 
     # Make/update credential file
     with open(CREDENTIAL_FILE, "w") as file:
-        # print(me)
         json.dump(me, file)
 
+    return client
 
 venmo = make_venmo()
 
@@ -114,10 +114,6 @@ def charge_money(amount, target, message):
 
     # print(final_amount, target, message)
     venmo.payment.request_money(final_amount, message, target)
-
-
-def logout():
-    venmo.log_out(access_token)
 
 
 if __name__ == "__main__":

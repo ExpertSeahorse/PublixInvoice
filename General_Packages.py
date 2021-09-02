@@ -1,6 +1,9 @@
 # 10-3-2020
 
 
+import sys
+
+
 def float_input():
     """
     Gets a float input from the console
@@ -495,6 +498,7 @@ def read_my_email(
     """
     import imaplib
     import email
+    import sys
 
     conn = imaplib.IMAP4_SSL(imap_server)
     conn.login(usernm, passwd)
