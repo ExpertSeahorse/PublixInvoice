@@ -482,33 +482,43 @@ def list_to_string(arr):
     return out
 
 
-def read_my_email(
-    subject,
+def login_to_email(
     usernm="dfeldmansfakeemail@gmail.com",
     passwd=privacy_decoder("ÜÐÚÚÜÓºâÊíâå", "password"),
-    imap_server="imap.gmail.com",
+    imap_server="imap.gmail.com"
 ):
-    """
-    Gets unread emails with the passed subject text
-    Interact with this function as a generator
-    param subject:      the subject of the unread email you are looking for
+    """Logs into an email and returns the connection
     param usernm:       email's username
     param passwd:       email's password
     param imap_server:  the name of your email imap server
     """
     import imaplib
+    conn = imaplib.IMAP4_SSL(imap_server)
+    print("logging in")
+    conn.login(usernm, passwd)
+    print("login good")
+    return conn
+
+def read_my_email(
+    subject,
+    conn
+):
+    """
+    Gets unread emails with the passed subject text
+    Interact with this function as a generator
+    param subject:      the subject of the unread email you are looking for
+    param conn:         the imaplib connection to an email inbox
+    """
     import email
     import sys
 
-    conn = imaplib.IMAP4_SSL(imap_server)
-    conn.login(usernm, passwd)
     conn.select("Inbox")
     _typ, data = conn.search(None, '(UNSEEN SUBJECT "%s")' % subject)
     for num in data[0].split():
         _typ, data = conn.fetch(num, "(RFC822)")
         msg = email.message_from_bytes(data[0][1])
-        _typ2, data = conn.store(num, "+FLAGS", "\\Seen")
         yield msg
+        _typ2, data = conn.store(num, "+FLAGS", "\\Seen")
 
 
 def ping(host, silent=False):
