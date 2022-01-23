@@ -5,9 +5,15 @@ import json, os, errno, re
 
 # Venmo documentation: https://pypi.org/project/venmo-api/
 
-here = os.path.join(
-    os.sep, "home", "david", "Documents", "projects", "PublixInvoice"
-)
+if os.name == 'nt':
+    here = os.path.join(
+        "C:\\", "Users", "dtfel", "projects", "PublixInvoice"
+    )
+
+else:
+    here = os.path.join(
+        os.sep, "home", "david", "Documents", "PersonalProjects", "PublixInvoice"
+    )
 
 ###### Build Venmo client from credential file
 def make_venmo():
